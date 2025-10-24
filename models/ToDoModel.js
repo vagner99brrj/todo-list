@@ -5,7 +5,7 @@ const ToDoModel = {
     //Recupera todas as tarefas 
     getAll: (callback) => {
         
-        db.all('SELECT * FROM tarefas', (err, rows) => {
+        db.all('SELECT * FROM tarefas WHERE completa = 0', (err, rows) => {
             callback(err, rows);
         });
     }, 
@@ -42,16 +42,16 @@ const ToDoModel = {
     } ,
 
     //Marcar como completa/incompleta
-    toggleComplete: (id, completa, callback) => {
+  toggleComplete: (id, completa, callback) => {
 
         db.run('UPDATE tarefas SET completa = ? WHERE id = ?', 
-          [completa ? 1 : 0, id], 
+          [completa, id], 
           function(err) {
+            
             callback(err, this ? this.changes : 0); 
           }
-        );  
-    }   
-}; 
-
+        );  
+    }   
+};
 module.exports = ToDoModel;
    

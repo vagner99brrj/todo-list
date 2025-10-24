@@ -76,27 +76,27 @@ app.put('/tarefas/:id', (req, res) => {
     });
 });
 // Rota para marcar uma tarefa como completa ou incompleta
-// app.patch('/tarefas/:id', (req, res) => {
-//     const id = req.params.id;
-//     const { completa } = req.body;
+app.patch('/tarefas/:id', (req, res) => {
+    const id = req.params.id;
+    const { completa } = req.body;
 
-//    if (completa === undefined || (completa !== 0 && completa !== 1)) {
-//         return res.status(400).json({ error: 'O campo "completa" deve ser 0 (incompleta) ou 1 (completa).' });
-//     }
+   if (completa === undefined || (completa !== 0 && completa !== 1)) {
+        return res.status(400).json({ error: 'O campo "completa" deve ser 0 (incompleta) ou 1 (completa).' });
+    }
 
-//     ToDoModel.toggleComplete(id, completa, (err, changes) => {
-//         if (err) {
-//             console.error(err);
-//             return res.status(500).json({ error: 'Erro ao atualizar o status da tarefa.' });
-//         }
+    ToDoModel.toggleComplete(id, completa, (err, changes) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Erro ao atualizar o status da tarefa.' });
+        }
 
-//         if (changes === 0) {
-//             return res.status(404).json({ error: 'Tarefa não encontrada.' });
-//         }
+        if (changes === 0) {
+            return res.status(404).json({ error: 'Tarefa não encontrada.' });
+        }
 
-//         res.status(200).json({ message: 'Status da tarefa atualizado com sucesso.' });
-//     });
-// });
+        res.status(200).json({ message: 'Status da tarefa atualizado com sucesso.' });
+    });
+});
 
 
    
