@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express(); 
 const PORT =2000;
 
@@ -7,6 +8,10 @@ const db = require('./database');
 const ToDoModel = require('./models/ToDoModel');
 
 app.use(express.json());
+app.use(cors());
+
+// Servir arquivos estáticos da pasta 'public'
+app.use(express.static('public'));
 
 // Rota para obter todas as tarefas
 app.get('/tarefas', (req, res) => {

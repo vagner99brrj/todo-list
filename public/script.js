@@ -20,6 +20,36 @@ async function apiFetch(url, options = {}) {
     }
 }
 
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+
+// Função para aplicar o tema salvo
+function applyTheme() {
+    
+    const savedTheme = localStorage.getItem('theme') || 'light'; 
+    
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-theme');
+    } else {
+        body.classList.remove('dark-theme');
+    }
+}
+
+// Evento para alternar o tema ao clicar no botão
+themeToggle.addEventListener('click', () => {
+    // Alterna a classe no <body>
+    body.classList.toggle('dark-theme'); 
+    
+    
+    if (body.classList.contains('dark-theme')) {
+        localStorage.setItem('theme', 'dark');
+    } else {
+        localStorage.setItem('theme', 'light');
+    }
+});
+
+applyTheme();
+
 // Função para buscar e renderizar tarefas (READ - GET)
 async function fetchAndRenderTasks() {
     try {

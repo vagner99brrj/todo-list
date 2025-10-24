@@ -1,0 +1,186 @@
+/* Estilos Globais */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    /* CENTRALIZA TUDO NO CENTRO DA TELA */
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    min-height: 100vh;
+}
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+h1 {
+    text-align: center;
+    color: #4CAF50; /* Verde */
+    margin-bottom: 25px;
+}
+
+/* --- Formulário de Criação (Header) --- */
+#task-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+#task-input {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+#task-form button {
+    padding: 12px 20px;
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#task-form button:hover {
+    background-color: #45a049;
+}
+
+/* --- Lista de Tarefas --- */
+#task-list {
+    list-style: none;
+    padding: 0;
+}
+
+#task-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0; /* Diminui o padding vertical e remove o horizontal */
+    margin-bottom: 10px; /* Adiciona espaçamento entre os itens */
+    border-bottom: 1px solid #eee; 
+    transition: background-color 0.3s;
+}
+
+#task-list li:hover {
+    background-color: transparent;
+}
+
+/* Garante que o Dark Theme tenha um bom espaçamento entre itens */
+body.dark-theme #task-list li {
+    border-color: #333;
+}
+
+.task-title {
+    flex-grow: 1;
+    font-size: 18px;
+}
+
+/* --- Ações (Botões) --- */
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.actions button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: opacity 0.3s;
+}
+
+/* Estilos específicos para cada botão */
+.complete {
+    background-color: #2196F3; 
+    color: white;
+}
+
+.edit, .save {
+    background-color: #FFC107; 
+    color: #333;
+}
+
+.delete {
+    background-color: #F44336; 
+    color: white;
+}
+
+.cancel {
+    background-color: #ccc;
+    color: #333;
+}
+
+/* Estilo para o input durante a edição */
+#task-list .edit-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #FFC107;
+    border-radius: 4px;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+/* public/styles.css (NOVO BLOCO NO FINAL) */
+
+/* Estilização do Botão de Alternância */
+#theme-toggle {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 10px 15px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#theme-toggle:hover {
+    background-color: #777;
+}
+
+/* --- ESTILOS DO TEMA ESCURO (DARK MODE) --- */
+body.dark-theme {
+    background-color: #121212; 
+    color: #e0e0e0; 
+}
+
+body.dark-theme .container {
+    background-color: #1e1e1e;
+    box-shadow: 0 6px 15px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme h1 {
+    color: #03dac6;
+}
+
+body.dark-theme #task-input {
+    background-color: #333;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body.dark-theme #task-form button {
+    background-color: #03dac6;
+    color: #121212;
+}
+
+body.dark-theme #task-list li {
+    border-color: #333;
+}
+
+body.dark-theme #task-list li:hover {
+    background-color: #2a2a2a;
+}
