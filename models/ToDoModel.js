@@ -21,6 +21,16 @@ const ToDoModel = {
         );
     }, 
 
+    //Atualiza apenas a propriedade completa
+    updatePriority: (id, completa, callback) => {
+        db.run('UPDATE tarefas SET completa = ? WHERE id = ?', 
+          [novoPrioridade, id], 
+          function(err) {
+            callback(err, this ? this.changes : 0); 
+          }
+        );
+    } ,
+
     // Remove uma tarefa 
     remove: (id, callback) => {
         
