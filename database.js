@@ -25,6 +25,22 @@ db.serialize(() => {
     });
 
     console.log('Estrutura do Banco de Dados SQLite verificada.');
+
+    db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+`, (err) => {
+    if (err) {
+        console.error("Erro ao criar a tabela 'users':", err.message);
+    } else {
+        console.log('Tabela users verificada/criada para autenticação.');
+    }
+
+});
+
 });
 
 module.exports = db;

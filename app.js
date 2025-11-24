@@ -103,6 +103,36 @@ app.patch('/tarefas/:id', (req, res) => {
     });
 });
 
+app.post('/register', (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
+    }
+
+    // Verifica se o usuário já existe pelo e-mail
+    UserModel.findByEmail(email, (err, user) => {
+        if (err) return res.status(500).json({ error: 'Erro de banco de dados.' });
+        
+        // Se o usuário já existe, retorna conflito (código HTTP 409)
+        if (user) {
+            return res.status(409).json({ error: 'E-mail já cadastrado. Tente fazer login.' });
+        }
+
+        // Cria o usuário no banco de dados
+        UserModel.createUser(email, password, (err, userId) => {
+            if (err) return res.status(500).json({ error: 'Erro ao criar usuário.' });
+
+            // Sucesso
+            res.status(201).json({ 
+                id: userId, 
+                email: email, 
+                message: 'Usuário cadastrado com sucesso!' 
+            });
+        });
+    });
+});
+
 
    
 
