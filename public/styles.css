@@ -184,3 +184,131 @@ body.dark-theme #task-list li {
 body.dark-theme #task-list li:hover {
     background-color: #2a2a2a;
 }
+/* --- Filtros --- */
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filters button {
+    padding: 8px 16px;
+    background-color: #ddd;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+    transition: all 0.3s;
+}
+
+.filters button.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Texto riscado para tarefas concluídas */
+.done-text {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* Modo escuro para os filtros */
+body.dark-theme .filters button {
+    background-color: #333;
+    color: #ccc;
+}
+
+body.dark-theme .filters button.active {
+    background-color: #03dac6;
+    color: #121212;
+}
+
+.reopen {
+    background-color: #9C27B0; /* Roxo para reabrir */
+    color: white;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+h1 { text-align: center; color: #4CAF50; margin-bottom: 25px; }
+
+/* Forms & Inputs */
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; 
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    background-color: #4CAF50;
+    transition: 0.3s;
+}
+button:hover { opacity: 0.9; }
+
+/* Auth Buttons */
+.auth-buttons { display: flex; gap: 10px; }
+.auth-buttons button { flex: 1; }
+.secondary { background-color: #2196F3; }
+.secondary-small { background-color: #777; padding: 5px 10px; font-size: 12px; }
+
+/* App Header */
+.header-row { display: flex; justify-content: space-between; align-items: center; }
+#task-form { display: flex; gap: 10px; margin-bottom: 20px; }
+#task-input { margin-bottom: 0; }
+
+/* List Items */
+#task-list { list-style: none; padding: 0; }
+#task-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.actions { display: flex; gap: 5px; }
+.actions button { padding: 5px 10px; font-size: 12px; }
+.delete { background-color: #F44336; }
+.edit { background-color: #FFC107; color: #333; }
+.complete { background-color: #2196F3; }
+.reopen { background-color: #9C27B0; }
+.cancel { background-color: #ccc; color: #333; }
+.done-text { text-decoration: line-through; color: #888; }
+
+/* Filters */
+.filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.filters button { background-color: #ddd; color: #555; border-radius: 20px; padding: 5px 15px; }
+.filters button.active { background-color: #4CAF50; color: white; }
+
+/* Dark Mode */
+body.dark-theme { background-color: #121212; color: #e0e0e0; }
+body.dark-theme .container { background-color: #1e1e1e; }
+body.dark-theme input { background-color: #333; border-color: #555; color: white; }
+body.dark-theme #task-list li { border-color: #333; }
