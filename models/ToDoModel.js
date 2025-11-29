@@ -1,67 +1,55 @@
 const db = require('../database');
 
 const ToDoModel = {
-
-    //Recupera todas as tarefas 
+    // Recupera tarefas pendentes (completa = 0)
     getAll: (callback) => {
-        
         db.all('SELECT * FROM tarefas WHERE completa = 0', (err, rows) => {
             callback(err, rows);
         });
-    }, 
+    },
 
-    // Cria uma nova tarefa 
+    getCompleted: (callback) => {
+        db.all('SELECT * FROM tarefas WHERE completa = 1', (err, rows) => {
+            callback(err, rows);
+        });
+    },
+
+    // Cria nova tarefa
     create: (titulo, callback) => {
-
-        db.run('INSERT INTO tarefas (titulo, completa) VALUES (?, ?)',
-            [titulo, 0],
+        db.run('INSERT INTO tarefas (titulo, completa) VALUES (?, ?)', 
+            [titulo, 0], 
             function (err) {
                 callback(err, this ? this.lastID : null);
             }
         );
-    }, 
+    },
 
-    //Atualiza apenas a propriedade completa
-    updatePriority: (id, completa, callback) => {
-        db.run('UPDATE tarefas SET completa = ? WHERE id = ?', 
-          [novoPrioridade, id], 
-          function(err) {
-            callback(err, this ? this.changes : 0); 
-          }
-        );
-    } ,
-
-    // Remove uma tarefa 
+    // Remove tarefa
     remove: (id, callback) => {
-        
         db.run('DELETE FROM tarefas WHERE id = ?', [id], function (err) {
-            callback(err, this ? this.changes : 0); 
-
+            callback(err, this ? this.changes : 0);
         });
-    } ,
+    },
 
-    //Editar o título
+    // Atualiza título
     updateTitle: (id, novoTitulo, callback) => {
-
         db.run('UPDATE tarefas SET titulo = ? WHERE id = ?', 
-          [novoTitulo, id], 
-          function(err) {
-            callback(err, this ? this.changes : 0); 
-          }
+            [novoTitulo, id], 
+            function(err) {
+                callback(err, this ? this.changes : 0);
+            }
         );
-    } ,
+    },
 
-    //Marcar como completa/incompleta
-  toggleComplete: (id, completa, callback) => {
-
+    // Marca como completa/incompleta
+    toggleComplete: (id, completa, callback) => {
         db.run('UPDATE tarefas SET completa = ? WHERE id = ?', 
-          [completa, id], 
-          function(err) {
-            
-            callback(err, this ? this.changes : 0); 
-          }
-        );  
-    }   
+            [completa, id], 
+            function(err) {
+                callback(err, this ? this.changes : 0);
+            }
+        );
+    }
 };
+
 module.exports = ToDoModel;
-   

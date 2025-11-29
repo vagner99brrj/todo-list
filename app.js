@@ -1,141 +1,28 @@
 const express = require('express');
 const cors = require('cors');
-const app = express(); 
-const PORT =2000;
+const app = express();
+const PORT = 2000;
 
-const db = require('./database');
-
-const ToDoModel = require('./models/ToDoModel');
-
+// Configurações
 app.use(express.json());
 app.use(cors());
-
-// Servir arquivos estáticos da pasta 'public'
 app.use(express.static('public'));
 
-// Rota para obter todas as tarefas
-app.get('/tarefas', (req, res) => {
-    ToDoModel.getAll((err, tasks) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro ao recuperar as tarefas.' });
-        }   
-        res.json(tasks);
-    }); 
-});
+// Importação dos Controllers
+const TaskController = require('./controllers/TaskController');
+const UserController = require('./controllers/UserController');
 
-// Rota para criar uma nova tarefa
-app.post('/tarefas', (req, res) => {
-    const { titulo } = req.body;    
-    if (!titulo) {
-        return res.status(400).json({ error: 'O campo "titulo" é obrigatório.' });
-    }   
-    ToDoModel.create(titulo, (err, taskId) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro ao criar a tarefa.' });
-        }   
-        res.status(201).json({ id: taskId, titulo, completa: 0 });
-    });
-});
+// --- Rotas de Tarefas ---
+app.get('/tarefas', TaskController.index);
+app.get('/tarefas/concluidas', TaskController.completed);
+app.post('/tarefas', TaskController.store);
+app.put('/tarefas/:id', TaskController.update);
+app.patch('/tarefas/:id', TaskController.patch);
+app.delete('/tarefas/:id', TaskController.delete);
 
-// Rota para deletar uma tarefa
-app.delete('/tarefas/:id', (req, res) => {
-    
-    const id = req.params.id; 
+// --- Rotas de Usuário ---
+app.post('/register', UserController.register);
+app.post('/login', UserController.login); // Nova rota funcional
 
-    ToDoModel.remove(id, (err, changes) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erro ao deletar a tarefa.' });
-        }
-        
-        if (changes === 0) {
-            return res.status(404).json({ error: 'Tarefa não encontrada.' });
-        }
-        
-        res.status(204).send(); 
-    });
-});
-
-// Rota para atualizar o título de uma tarefa
-app.put('/tarefas/:id', (req, res) => {
-    const id = req.params.id;
-    const { titulo } = req.body; 
-
-    if (!titulo) {
-        return res.status(400).json({ error: 'O campo "titulo" é obrigatório para a edição.' });
-    }
-
-    ToDoModel.updateTitle(id, titulo, (err, changes) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erro ao atualizar a tarefa.' });
-        }
-
-        if (changes === 0) {
-          
-            return res.status(404).json({ error: 'Tarefa não encontrada.' });
-        }
-
-        
-        res.status(200).json({ message: 'Tarefa atualizada com sucesso.' });
-    });
-});
-// Rota para marcar uma tarefa como completa ou incompleta
-app.patch('/tarefas/:id', (req, res) => {
-    const id = req.params.id;
-    const { completa } = req.body;
-
-   if (completa === undefined || (completa !== 0 && completa !== 1)) {
-        return res.status(400).json({ error: 'O campo "completa" deve ser 0 (incompleta) ou 1 (completa).' });
-    }
-
-    ToDoModel.toggleComplete(id, completa, (err, changes) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erro ao atualizar o status da tarefa.' });
-        }
-
-        if (changes === 0) {
-            return res.status(404).json({ error: 'Tarefa não encontrada.' });
-        }
-
-        res.status(200).json({ message: 'Status da tarefa atualizado com sucesso.' });
-    });
-});
-
-app.post('/register', (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
-    }
-
-    // Verifica se o usuário já existe pelo e-mail
-    UserModel.findByEmail(email, (err, user) => {
-        if (err) return res.status(500).json({ error: 'Erro de banco de dados.' });
-        
-        // Se o usuário já existe, retorna conflito (código HTTP 409)
-        if (user) {
-            return res.status(409).json({ error: 'E-mail já cadastrado. Tente fazer login.' });
-        }
-
-        // Cria o usuário no banco de dados
-        UserModel.createUser(email, password, (err, userId) => {
-            if (err) return res.status(500).json({ error: 'Erro ao criar usuário.' });
-
-            // Sucesso
-            res.status(201).json({ 
-                id: userId, 
-                email: email, 
-                message: 'Usuário cadastrado com sucesso!' 
-            });
-        });
-    });
-});
-
-
-   
-
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-}); 
+// Inicialização
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
