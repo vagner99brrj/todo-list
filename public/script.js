@@ -1,5 +1,6 @@
 const API_URL = 'http://localhost:2000';
-// Elementos de Auth
+
+// Elementos UI
 const authContainer = document.getElementById('auth-container');
 const appContainer = document.getElementById('app-container');
 const authForm = document.getElementById('auth-form');
@@ -7,7 +8,7 @@ const btnRegister = document.getElementById('btn-register');
 const authMsg = document.getElementById('auth-msg');
 const btnLogout = document.getElementById('btn-logout');
 
-// Elementos do App
+// Elementos App
 const taskList = document.getElementById('task-list');
 const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
@@ -17,18 +18,58 @@ const btnCompleted = document.getElementById('btn-completed');
 
 let showingCompleted = false;
 
-// --- Helpers ---
+// --- 1. FUNÇÃO CENTRAL DE REQUISIÇÃO (MODIFICADA) ---
 async function apiFetch(endpoint, options = {}) {
+    // Recupera o token salvo
+    const token = localStorage.getItem('token');
+
+    // Configura os cabeçalhos padrão
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers // Mantém outros headers se existirem
+    };
+
+    // Se tiver token, adiciona no cabeçalho Authorization
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const config = {
+        ...options,
+        headers: headers
+    };
+
     try {
-        const response = await fetch(`${API_URL}${endpoint}`, options);
+        const response = await fetch(`${API_URL}${endpoint}`, config);
+        
+        // Se der erro 401 (Não autorizado), força o logout
+        if (response.status === 401) {
+            alert('Sessão expirada. Faça login novamente.');
+            logout();
+            return;
+        }
+
         if (!response.ok) {
             const err = await response.json();
             throw new Error(err.error || 'Erro na requisição');
         }
         return response;
     } catch (error) {
-        alert(error.message);
+        // Ignora erro de sessão expirada para não spamar alert
+        if (error.message !== 'Sessão expirada. Faça login novamente.') {
+            alert(error.message);
+        }
         throw error;
+    }
+}
+
+// --- Funções de Tela ---
+function checkLogin() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        showApp();
+    } else {
+        showLogin();
     }
 }
 
@@ -42,52 +83,77 @@ function showLogin() {
     appContainer.style.display = 'none';
     authContainer.style.display = 'block';
     authForm.reset();
+    authMsg.textContent = '';
+}
+
+function logout() {
+    localStorage.removeItem('token'); // Remove o crachá
+    localStorage.removeItem('user');
+    showLogin();
 }
 
 // --- Autenticação ---
-authForm.addEventListener('submit', async (e) => { // LOGIN
+authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('auth-email').value;
     const password = document.getElementById('auth-password').value;
 
     try {
-        const res = await apiFetch('/login', {
+        // Usa fetch direto aqui pois o apiFetch exige token (e aqui não temos ainda)
+        const res = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.error || 'Erro no login');
+
+        // 2. SALVAR O TOKEN
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify({ id: data.id, email: data.email }));
+        
+        authMsg.textContent = "Login realizado!";
+        showApp();
+
+    } catch (err) {
+        authMsg.textContent = err.message;
+        authMsg.style.color = 'red';
+    }
+});
+
+btnRegister.addEventListener('click', async () => {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    if(!email || !password) return alert('Preencha email e senha.');
+
+    try {
+        const res = await fetch(`${API_URL}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
         const data = await res.json();
-        // Aqui poderíamos salvar um token no futuro.
-        // Por enquanto, apenas liberamos o acesso.
-        authMsg.textContent = "Login realizado!";
-        showApp();
+        if (!res.ok) throw new Error(data.error);
+        
+        alert('Cadastrado! Faça login.');
+        authForm.reset();
     } catch (err) {
-        authMsg.textContent = err.message;
+        alert(err.message);
     }
 });
 
-btnRegister.addEventListener('click', async () => { // CADASTRO
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    if(!email || !password) return alert('Preencha email e senha para cadastrar.');
-
-    try {
-        await apiFetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        alert('Usuário cadastrado! Agora faça login.');
-    } catch (err) {}
-});
-
-btnLogout.addEventListener('click', showLogin);
+btnLogout.addEventListener('click', logout);
 
 // --- App Lógica (Tarefas) ---
+// (O restante permanece igual, pois o apiFetch resolve a autenticação)
+
 async function fetchAndRenderTasks() {
     const endpoint = showingCompleted ? '/tarefas/concluidas' : '/tarefas';
     try {
         const res = await apiFetch(endpoint);
+        if(!res) return; // Se falhou (401), para aqui
         const tasks = await res.json();
         taskList.innerHTML = '';
         
@@ -100,14 +166,14 @@ async function fetchAndRenderTasks() {
             li.innerHTML = `<span class="task-title ${showingCompleted ? 'done-text' : ''}">${task.titulo}</span><div class="actions">${btns}</div>`;
             taskList.appendChild(li);
         });
-    } catch (e) {}
+    } catch (e) { console.log(e) }
 }
 
 taskForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const titulo = taskInput.value.trim();
     if (!titulo) return;
-    await apiFetch('/tarefas', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ titulo }) });
+    await apiFetch('/tarefas', { method: 'POST', body: JSON.stringify({ titulo }) });
     taskInput.value = '';
     fetchAndRenderTasks();
 });
@@ -116,10 +182,11 @@ taskList.addEventListener('click', async (e) => {
     const id = e.target.dataset.id;
     if (!id) return;
     const cl = e.target.classList;
+    const url = `/tarefas/${id}`;
     
-    if (cl.contains('delete') && confirm('Excluir?')) await apiFetch(`/tarefas/${id}`, { method: 'DELETE' });
-    else if (cl.contains('complete')) await apiFetch(`/tarefas/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({completa: 1}) });
-    else if (cl.contains('reopen')) await apiFetch(`/tarefas/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({completa: 0}) });
+    if (cl.contains('delete') && confirm('Excluir?')) await apiFetch(url, { method: 'DELETE' });
+    else if (cl.contains('complete')) await apiFetch(url, { method: 'PATCH', body: JSON.stringify({completa: 1}) });
+    else if (cl.contains('reopen')) await apiFetch(url, { method: 'PATCH', body: JSON.stringify({completa: 0}) });
     else if (cl.contains('edit')) {
         const li = e.target.closest('li');
         const old = li.querySelector('.task-title').innerText;
@@ -127,17 +194,18 @@ taskList.addEventListener('click', async (e) => {
     }
     else if (cl.contains('save')) {
         const val = e.target.closest('li').querySelector('.edit-input').value;
-        if(val) await apiFetch(`/tarefas/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({titulo: val}) });
+        if(val) await apiFetch(url, { method: 'PUT', body: JSON.stringify({titulo: val}) });
     }
     else if (cl.contains('cancel')) return fetchAndRenderTasks();
     
     fetchAndRenderTasks();
 });
 
-// Filtros
+// Filtros & Tema
 btnPending.addEventListener('click', () => { showingCompleted=false; btnPending.classList.add('active'); btnCompleted.classList.remove('active'); taskForm.style.display='flex'; fetchAndRenderTasks(); });
 btnCompleted.addEventListener('click', () => { showingCompleted=true; btnCompleted.classList.add('active'); btnPending.classList.remove('active'); taskForm.style.display='none'; fetchAndRenderTasks(); });
-
-// Tema
 themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-theme'); localStorage.setItem('theme', document.body.classList.contains('dark-theme')?'dark':'light'); });
 if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark-theme');
+
+// Init
+checkLogin(); // Verifica se já tem token salvo ao carregar a página

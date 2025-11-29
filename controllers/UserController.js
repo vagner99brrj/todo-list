@@ -1,7 +1,10 @@
 const UserModel = require('../models/UserModel');
+const jwt = require('jsonwebtoken'); // + Importar JWT
+require('dotenv').config(); // + Carregar env
 
 module.exports = {
     register: (req, res) => {
+        // ... (Código do register permanece igual)
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).json({ error: 'Dados incompletos.' });
 
@@ -28,7 +31,11 @@ module.exports = {
                 if (err) return res.status(500).json({ error: 'Erro ao verificar senha.' });
                 if (!isMatch) return res.status(401).json({ error: 'Credenciais inválidas.' });
                 
-                res.json({ id: user.id, email: user.email, message: 'Login realizado.' });
+                // + GERAÇÃO DO TOKEN
+                const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+                // + Retorna o token para o frontend
+                res.json({ id: user.id, email: user.email, token, message: 'Login realizado.' });
             });
         });
     }
