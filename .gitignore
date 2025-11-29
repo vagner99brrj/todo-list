@@ -1,6 +1,7 @@
 @"
 node_modules/
 todo.db
+.env
 *.log
 .DS_Store
 "@ | Out-File -Encoding utf8 .gitignore
