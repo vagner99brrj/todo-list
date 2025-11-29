@@ -1,33 +1,70 @@
-# ToDo List API com Node.js e Front-end Básico
+# ToDo List Full Stack (MVC)
 
-Este é um projeto simples de lista de tarefas (ToDo List) desenvolvido para demonstrar uma arquitetura básica de Full Stack, utilizando Node.js/Express para o Backend (API REST) e HTML, CSS e JavaScript puro para o Frontend.
+Projeto de gerenciamento de tarefas desenvolvido com **Node.js** e **Vanilla JavaScript**. 
+O objetivo principal é demonstrar a implementação de uma arquitetura **MVC (Model-View-Controller)**, operações CRUD completas e persistência de dados com SQLite.
 
-##  Funcionalidades
+## 🚀 Tecnologias
 
-O projeto implementa todas as operações essenciais de um CRUD:
+- **Backend:** Node.js, Express, SQLite3, CORS.
+- **Frontend:** HTML5, CSS3, JavaScript (ES6+).
+- **Arquitetura:** MVC (Model-View-Controller).
+- **Database:** SQLite (Arquivo local `todo.db`).
 
-- **Listar Tarefas (GET):** Exibe apenas as tarefas pendentes (`completa = 0`).
-- **Criar Tarefas (POST):** Adiciona novas tarefas à lista.
-- **Editar Tarefas (PUT):** Atualiza o título de uma tarefa existente.
-- **Concluir Tarefas (PATCH):** Marca uma tarefa como completa (`completa = 1`).
-- **Excluir Tarefas (DELETE):** Remove permanentemente uma tarefa.
-- **Alternar Tema (UI):** Funcionalidade de Dark/Light Mode com persistência no LocalStorage.
+## 📋 Funcionalidades
 
-##  Tecnologias Utilizadas
+- **CRUD de Tarefas:** Criar, Listar, Editar e Excluir tarefas.
+- **Histórico:** Filtros para visualizar tarefas "Pendentes" ou "Concluídas".
+- **Status:** Marcar/Desmarcar tarefas como completas.
+- **Reabertura:** Possibilidade de reabrir tarefas já finalizadas.
+- **UI/UX:** Dark Mode com persistência automática (LocalStorage).
+- **Autenticação (UI):** Interface de Login e Cadastro (Lógica de segurança em desenvolvimento).
 
-**Backend (API):**
+## 📂 Estrutura do Projeto
 
-- **Node.js:** Ambiente de execução.
-- **Express:** Framework web para roteamento e middlewares.
-- **SQLite (Simulação):** Armazenamento de dados.
-- **CORS:** Middleware para permitir requisições do frontend.
+```text
+/
+├── controllers/    # Lógica de controle (Regras de negócio)
+├── models/         # Acesso ao Banco de Dados (SQL queries)
+├── public/         # Frontend (HTML, CSS, JS estáticos)
+├── app.js          # Entrada do servidor e rotas
+├── database.js     # Configuração e conexão SQLite
+└── todo.db         # Arquivo do banco de dados (gerado automaticamente)
+🛠️ Como Rodar
+Clone o repositório
 
-**Frontend (Client):**
+Bash
 
-- **HTML5:** Estrutura da aplicação.
-- **CSS3:** Estilização responsiva e temas (Dark/Light Mode).
-- **JavaScript (ES6+):** Lógica de consumo da API (`fetch` e `async/await`), manipulação do DOM e lógica de temas.
+git clone https://github.com/vagner99brrj/todo-list.git
+cd todo-list
+Instale as dependências
 
-### Pré-requisitos
+Bash
 
-Certifique-se de ter o Node.js e o npm instalados em sua máquina.
+npm install
+Inicie o Servidor
+
+Bash
+
+npm run dev
+Acesse Abra http://localhost:2000 no seu navegador.
+
+🔌 API Endpoints
+Tarefas
+GET /tarefas - Lista todas as pendentes.
+
+GET /tarefas/concluidas - Lista histórico de concluídas.
+
+POST /tarefas - Cria nova tarefa.
+
+PUT /tarefas/:id - Atualiza título.
+
+PATCH /tarefas/:id - Atualiza status (completa/incompleta).
+
+DELETE /tarefas/:id - Remove tarefa.
+
+Usuários
+POST /register - Cria novo usuário.
+
+POST /login - Autenticação simples.
+
+Desenvolvido para fins de aprendizado em Full Stack Development.
